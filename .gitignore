@@ -1,0 +1,8 @@
+# Rust build artifacts
+/target
+
+# Claude Code workspace (local settings, skills — not shared)
+.claude/
+
+# macOS
+.DS_Store

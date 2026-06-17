@@ -1,0 +1,275 @@
+[[sentence]]
+text = "She doesn't like coffee in the morning."
+tags = ["present-simple", "third-person-s"]
+
+[[sentence]]
+text = "How long have you been waiting?"
+tags = ["present-perfect-continuous", "question"]
+
+[[sentence]]
+text = "He's already eaten lunch."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "They go to the market every Sunday."
+tags = ["present-simple", "routine"]
+
+# say2 — everyday English drill sentences
+# Tags let you filter in search mode (press /). Useful tags:
+#   greetings, smalltalk, questions, past, present-perfect,
+#   third-person-s, future, requests, opinions, daily, work
+#
+# Grow this file freely — just copy the [[sentence]] block format.
+
+# ---------- Greetings & small talk ----------
+[[sentence]]
+text = "Hey, how's it going?"
+tags = ["greetings", "smalltalk"]
+
+[[sentence]]
+text = "Long time no see!"
+tags = ["greetings", "smalltalk"]
+
+[[sentence]]
+text = "How was your weekend?"
+tags = ["greetings", "smalltalk", "past", "questions"]
+
+[[sentence]]
+text = "I'm doing pretty well, thanks. And you?"
+tags = ["greetings", "smalltalk"]
+
+[[sentence]]
+text = "Take care, see you soon!"
+tags = ["greetings", "smalltalk"]
+
+[[sentence]]
+text = "It was nice talking to you."
+tags = ["greetings", "smalltalk", "past"]
+
+# ---------- Everyday questions ----------
+[[sentence]]
+text = "What do you do for a living?"
+tags = ["questions", "smalltalk", "work"]
+
+[[sentence]]
+text = "Where are you from?"
+tags = ["questions", "smalltalk"]
+
+[[sentence]]
+text = "What time do you usually wake up?"
+tags = ["questions", "daily", "third-person-s"]
+
+[[sentence]]
+text = "How long have you been waiting?"
+tags = ["questions", "present-perfect"]
+
+[[sentence]]
+text = "Could you say that again, please?"
+tags = ["questions", "requests"]
+
+[[sentence]]
+text = "What does this word mean?"
+tags = ["questions", "third-person-s"]
+
+[[sentence]]
+text = "Do you know what time it is?"
+tags = ["questions", "daily"]
+
+[[sentence]]
+text = "Can you help me with something?"
+tags = ["questions", "requests"]
+
+# ---------- Third-person -s (your weak spot) ----------
+[[sentence]]
+text = "She works from home on Fridays."
+tags = ["third-person-s", "daily", "work"]
+
+[[sentence]]
+text = "He doesn't like coffee in the morning."
+tags = ["third-person-s", "daily"]
+
+[[sentence]]
+text = "My brother lives near the station."
+tags = ["third-person-s", "daily"]
+
+[[sentence]]
+text = "It takes about twenty minutes by car."
+tags = ["third-person-s", "daily"]
+
+[[sentence]]
+text = "She speaks three languages fluently."
+tags = ["third-person-s"]
+
+[[sentence]]
+text = "He always forgets his keys."
+tags = ["third-person-s", "daily"]
+
+[[sentence]]
+text = "The shop closes at six on weekdays."
+tags = ["third-person-s", "daily"]
+
+[[sentence]]
+text = "My dog watches me eat every meal."
+tags = ["third-person-s", "daily"]
+
+# ---------- Past tense (your weak spot) ----------
+[[sentence]]
+text = "I went to the market yesterday."
+tags = ["past", "daily"]
+
+[[sentence]]
+text = "We watched a movie last night."
+tags = ["past", "daily"]
+
+[[sentence]]
+text = "She called me an hour ago."
+tags = ["past"]
+
+[[sentence]]
+text = "They bought a new house last year."
+tags = ["past"]
+
+[[sentence]]
+text = "I forgot to send the email."
+tags = ["past", "work"]
+
+[[sentence]]
+text = "He left before the meeting started."
+tags = ["past", "work"]
+
+[[sentence]]
+text = "It rained all day on Sunday."
+tags = ["past", "daily"]
+
+[[sentence]]
+text = "We had a great time at the party."
+tags = ["past"]
+
+# ---------- Present perfect & past participles (your weak spot) ----------
+[[sentence]]
+text = "I've already finished my work."
+tags = ["present-perfect", "past-participle", "work"]
+
+[[sentence]]
+text = "He's eaten lunch already."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "Have you ever been to London?"
+tags = ["present-perfect", "past-participle", "questions"]
+
+[[sentence]]
+text = "She's gone home for the day."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "I've never seen that movie."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "They've taken the wrong train."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "We've known each other for years."
+tags = ["present-perfect", "past-participle"]
+
+[[sentence]]
+text = "I've written three emails this morning."
+tags = ["present-perfect", "past-participle", "work"]
+
+# ---------- Requests & polite phrases ----------
+[[sentence]]
+text = "Would you mind opening the window?"
+tags = ["requests", "daily"]
+
+[[sentence]]
+text = "Could I have a glass of water, please?"
+tags = ["requests", "daily"]
+
+[[sentence]]
+text = "Let me know if you need anything."
+tags = ["requests", "work"]
+
+[[sentence]]
+text = "Sorry to bother you, but I have a quick question."
+tags = ["requests", "work"]
+
+[[sentence]]
+text = "Feel free to ask me anything."
+tags = ["requests"]
+
+# ---------- Opinions & reactions ----------
+[[sentence]]
+text = "I think that's a great idea."
+tags = ["opinions", "smalltalk"]
+
+[[sentence]]
+text = "To be honest, I'm not sure."
+tags = ["opinions"]
+
+[[sentence]]
+text = "That makes a lot of sense."
+tags = ["opinions", "third-person-s"]
+
+[[sentence]]
+text = "I couldn't agree more."
+tags = ["opinions"]
+
+[[sentence]]
+text = "It depends on the situation."
+tags = ["opinions", "third-person-s"]
+
+[[sentence]]
+text = "I see what you mean."
+tags = ["opinions"]
+
+# ---------- Future & plans ----------
+[[sentence]]
+text = "I'm going to call you later."
+tags = ["future", "daily"]
+
+[[sentence]]
+text = "We'll figure it out together."
+tags = ["future", "work"]
+
+[[sentence]]
+text = "What are you doing this weekend?"
+tags = ["future", "questions", "smalltalk"]
+
+[[sentence]]
+text = "I'll get back to you tomorrow."
+tags = ["future", "work"]
+
+[[sentence]]
+text = "Let's grab a coffee sometime."
+tags = ["future", "smalltalk"]
+
+# ---------- Work & everyday practical ----------
+[[sentence]]
+text = "Can we reschedule the meeting?"
+tags = ["work", "requests"]
+
+[[sentence]]
+text = "I'm running a little late."
+tags = ["work", "daily"]
+
+[[sentence]]
+text = "Let's keep it simple."
+tags = ["work"]
+
+[[sentence]]
+text = "That works for me."
+tags = ["work", "third-person-s"]
+
+[[sentence]]
+text = "I'll send you the details."
+tags = ["work", "future"]
+
+[[sentence]]
+text = "No worries, take your time."
+tags = ["daily", "smalltalk"]
+
+[[sentence]]
+text = "I really appreciate your help."
+tags = ["daily", "work"]
