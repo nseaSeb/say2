@@ -1,275 +1,1338 @@
+[settings]
+rate = 155
+
 [[sentence]]
 text = "She doesn't like coffee in the morning."
 tags = ["present-simple", "third-person-s"]
+note = "present simple negative for a habit; e.g. He doesn't drink tea."
+starred = true
 
 [[sentence]]
 text = "How long have you been waiting?"
 tags = ["present-perfect-continuous", "question"]
+note = "present perfect continuous asking duration up to now; e.g. How long have you been learning English?"
 
 [[sentence]]
 text = "He's already eaten lunch."
 tags = ["present-perfect", "past-participle"]
+note = "present perfect with already = done before now; he's = he has."
 
 [[sentence]]
 text = "They go to the market every Sunday."
 tags = ["present-simple", "routine"]
+note = "present simple for routines; every Sunday signals a habit."
 
-# say2 — everyday English drill sentences
-# Tags let you filter in search mode (press /). Useful tags:
-#   greetings, smalltalk, questions, past, present-perfect,
-#   third-person-s, future, requests, opinions, daily, work
-#
-# Grow this file freely — just copy the [[sentence]] block format.
-
-# ---------- Greetings & small talk ----------
 [[sentence]]
 text = "Hey, how's it going?"
 tags = ["greetings", "smalltalk"]
+note = "casual greeting meaning how are you; reply: pretty good, you?"
 
 [[sentence]]
 text = "Long time no see!"
 tags = ["greetings", "smalltalk"]
+note = "friendly greeting after a long gap; e.g. meeting an old friend."
 
 [[sentence]]
 text = "How was your weekend?"
 tags = ["greetings", "smalltalk", "past", "questions"]
+note = "common Monday small talk; reply with what you did."
 
 [[sentence]]
 text = "I'm doing pretty well, thanks. And you?"
 tags = ["greetings", "smalltalk"]
+note = "polite reply to how are you, returning the question."
 
 [[sentence]]
 text = "Take care, see you soon!"
 tags = ["greetings", "smalltalk"]
+note = "warm goodbye; take care = look after yourself."
 
 [[sentence]]
 text = "It was nice talking to you."
 tags = ["greetings", "smalltalk", "past"]
+note = "polite phrase to end a conversation."
 
-# ---------- Everyday questions ----------
 [[sentence]]
 text = "What do you do for a living?"
 tags = ["questions", "smalltalk", "work"]
+note = "asks about someone's job; reply: I'm a teacher."
 
 [[sentence]]
 text = "Where are you from?"
 tags = ["questions", "smalltalk"]
+note = "asks home country or city; reply: I'm from France."
 
 [[sentence]]
 text = "What time do you usually wake up?"
 tags = ["questions", "daily", "third-person-s"]
-
-[[sentence]]
-text = "How long have you been waiting?"
-tags = ["questions", "present-perfect"]
+note = "asks about a daily habit; usually = normally."
 
 [[sentence]]
 text = "Could you say that again, please?"
 tags = ["questions", "requests"]
+note = "polite request to repeat something."
 
 [[sentence]]
 text = "What does this word mean?"
 tags = ["questions", "third-person-s"]
+note = "asks for a definition; e.g. pointing at a word."
 
 [[sentence]]
 text = "Do you know what time it is?"
 tags = ["questions", "daily"]
+note = "polite way to ask the time."
 
 [[sentence]]
 text = "Can you help me with something?"
 tags = ["questions", "requests"]
+note = "casual request for assistance."
 
-# ---------- Third-person -s (your weak spot) ----------
 [[sentence]]
 text = "She works from home on Fridays."
 tags = ["third-person-s", "daily", "work"]
+note = "work from home = do your job remotely; e.g. on Fridays she stays home."
 
 [[sentence]]
 text = "He doesn't like coffee in the morning."
 tags = ["third-person-s", "daily"]
+note = "present simple negative habit."
 
 [[sentence]]
 text = "My brother lives near the station."
 tags = ["third-person-s", "daily"]
+note = "present simple; lives near = close to."
 
 [[sentence]]
 text = "It takes about twenty minutes by car."
 tags = ["third-person-s", "daily"]
+note = "it takes = the time needed; by car = driving."
 
 [[sentence]]
 text = "She speaks three languages fluently."
 tags = ["third-person-s"]
+note = "fluently = smoothly and well."
 
 [[sentence]]
 text = "He always forgets his keys."
 tags = ["third-person-s", "daily"]
+note = "always + present simple for a repeated habit."
 
 [[sentence]]
 text = "The shop closes at six on weekdays."
 tags = ["third-person-s", "daily"]
+note = "weekdays = Monday to Friday."
 
 [[sentence]]
 text = "My dog watches me eat every meal."
 tags = ["third-person-s", "daily"]
+note = "present simple habit; note third-person -s on watches."
 
-# ---------- Past tense (your weak spot) ----------
 [[sentence]]
 text = "I went to the market yesterday."
 tags = ["past", "daily"]
+note = "past simple of go = went; yesterday signals past."
 
 [[sentence]]
 text = "We watched a movie last night."
 tags = ["past", "daily"]
+note = "past simple for a finished past action."
 
 [[sentence]]
 text = "She called me an hour ago."
 tags = ["past"]
+note = "ago = before now; an hour ago = 60 minutes back."
 
 [[sentence]]
 text = "They bought a new house last year."
 tags = ["past"]
+note = "past simple of buy = bought."
 
 [[sentence]]
 text = "I forgot to send the email."
 tags = ["past", "work"]
+note = "forgot to do = failed to remember to do it."
 
 [[sentence]]
 text = "He left before the meeting started."
 tags = ["past", "work"]
+note = "left = past of leave; before shows the order of events."
 
 [[sentence]]
 text = "It rained all day on Sunday."
 tags = ["past", "daily"]
+note = "past simple; all day = the whole day."
 
 [[sentence]]
 text = "We had a great time at the party."
 tags = ["past"]
+note = "have a great time = enjoy yourself."
 
-# ---------- Present perfect & past participles (your weak spot) ----------
 [[sentence]]
 text = "I've already finished my work."
 tags = ["present-perfect", "past-participle", "work"]
+note = "present perfect; already = sooner than expected."
 
 [[sentence]]
 text = "He's eaten lunch already."
 tags = ["present-perfect", "past-participle"]
+note = "present perfect; he's = he has."
 
 [[sentence]]
 text = "Have you ever been to London?"
 tags = ["present-perfect", "past-participle", "questions"]
+note = "present perfect for life experience; ever = at any time."
 
 [[sentence]]
 text = "She's gone home for the day."
 tags = ["present-perfect", "past-participle"]
+note = "has gone = left and is still away; for the day = until tomorrow."
 
 [[sentence]]
 text = "I've never seen that movie."
 tags = ["present-perfect", "past-participle"]
+note = "present perfect; never = not at any time in my life."
 
 [[sentence]]
 text = "They've taken the wrong train."
 tags = ["present-perfect", "past-participle"]
+note = "present perfect; taken = past participle of take."
 
 [[sentence]]
 text = "We've known each other for years."
 tags = ["present-perfect", "past-participle"]
+note = "present perfect with for = duration up to now."
 
 [[sentence]]
 text = "I've written three emails this morning."
 tags = ["present-perfect", "past-participle", "work"]
+note = "present perfect, the morning is not over; written = past participle of write."
 
-# ---------- Requests & polite phrases ----------
 [[sentence]]
 text = "Would you mind opening the window?"
 tags = ["requests", "daily"]
+note = "very polite request; reply not at all = yes, I'll do it."
 
 [[sentence]]
 text = "Could I have a glass of water, please?"
 tags = ["requests", "daily"]
+note = "polite request in a cafe or at home."
 
 [[sentence]]
 text = "Let me know if you need anything."
 tags = ["requests", "work"]
+note = "offering help; let me know = tell me."
 
 [[sentence]]
 text = "Sorry to bother you, but I have a quick question."
 tags = ["requests", "work"]
+note = "polite way to interrupt someone."
 
 [[sentence]]
 text = "Feel free to ask me anything."
 tags = ["requests"]
+note = "feel free = you are welcome to; no need to hesitate."
 
-# ---------- Opinions & reactions ----------
 [[sentence]]
 text = "I think that's a great idea."
 tags = ["opinions", "smalltalk"]
+note = "agreeing and giving a positive opinion."
 
 [[sentence]]
 text = "To be honest, I'm not sure."
 tags = ["opinions"]
+note = "to be honest = speaking frankly; softens uncertainty."
 
 [[sentence]]
 text = "That makes a lot of sense."
 tags = ["opinions", "third-person-s"]
+note = "make sense = be logical or clear."
 
 [[sentence]]
 text = "I couldn't agree more."
 tags = ["opinions"]
+note = "strong agreement = I completely agree."
 
 [[sentence]]
 text = "It depends on the situation."
 tags = ["opinions", "third-person-s"]
+note = "no fixed answer; the result varies with circumstances."
 
 [[sentence]]
 text = "I see what you mean."
 tags = ["opinions"]
+note = "I understand your point."
 
-# ---------- Future & plans ----------
 [[sentence]]
 text = "I'm going to call you later."
 tags = ["future", "daily"]
+note = "be going to = a planned future intention."
 
 [[sentence]]
 text = "We'll figure it out together."
 tags = ["future", "work"]
+note = "figure out = solve or understand; we'll = we will."
 
 [[sentence]]
 text = "What are you doing this weekend?"
 tags = ["future", "questions", "smalltalk"]
+note = "present continuous used for future plans."
 
 [[sentence]]
 text = "I'll get back to you tomorrow."
 tags = ["future", "work"]
+note = "get back to someone = reply later."
 
 [[sentence]]
 text = "Let's grab a coffee sometime."
 tags = ["future", "smalltalk"]
+note = "grab a coffee = meet for a coffee, casual."
 
-# ---------- Work & everyday practical ----------
 [[sentence]]
 text = "Can we reschedule the meeting?"
 tags = ["work", "requests"]
+note = "reschedule = move it to another time."
 
 [[sentence]]
 text = "I'm running a little late."
 tags = ["work", "daily"]
+note = "running late = behind schedule; will arrive late."
 
 [[sentence]]
 text = "Let's keep it simple."
 tags = ["work"]
+note = "keep it simple = avoid making it complicated."
 
 [[sentence]]
 text = "That works for me."
 tags = ["work", "third-person-s"]
+note = "that works = that is fine or convenient for me."
 
 [[sentence]]
 text = "I'll send you the details."
 tags = ["work", "future"]
+note = "details = the specific information."
 
 [[sentence]]
 text = "No worries, take your time."
 tags = ["daily", "smalltalk"]
+note = "no worries = it's fine; take your time = no rush."
 
 [[sentence]]
 text = "I really appreciate your help."
 tags = ["daily", "work"]
+note = "appreciate = be grateful for; a polite thanks."
+
+[[sentence]]
+text = "I'm running a bit late."
+tags = ["daily", "smalltalk"]
+note = "running late; a bit = slightly."
+
+[[sentence]]
+text = "Can you give me a hand with this?"
+tags = ["requests", "daily"]
+note = "give a hand = help."
+
+[[sentence]]
+text = "I'll be right back."
+tags = ["daily", "future"]
+note = "I'll return very soon; often shortened to BRB."
+
+[[sentence]]
+text = "Let me check and get back to you."
+tags = ["work", "daily", "future"]
+note = "I'll look into it and reply later."
+
+[[sentence]]
+text = "It's up to you."
+tags = ["opinions", "daily"]
+note = "up to you = your decision."
+
+[[sentence]]
+text = "Sounds good to me."
+tags = ["opinions", "smalltalk"]
+note = "sounds good = I agree, that's fine."
+
+[[sentence]]
+text = "I have no idea."
+tags = ["opinions", "daily"]
+note = "I don't know at all."
+
+[[sentence]]
+text = "Take your time."
+tags = ["requests", "smalltalk"]
+note = "no need to hurry."
+
+[[sentence]]
+text = "Never mind, it's not important."
+tags = ["daily", "smalltalk"]
+note = "never mind = forget it, drop the subject."
+
+[[sentence]]
+text = "Sorry, I didn't catch that. Could you say it again?"
+tags = ["requests", "questions", "daily"]
+note = "didn't catch that = didn't hear or understand it."
+
+[[sentence]]
+text = "Could I get a coffee to go, please?"
+tags = ["requests", "daily"]
+note = "to go = takeaway, not to drink in."
+
+[[sentence]]
+text = "How much does this cost?"
+tags = ["questions", "daily"]
+note = "asking the price."
+
+[[sentence]]
+text = "Do you take card?"
+tags = ["questions", "daily"]
+note = "asking if they accept card payment."
+
+[[sentence]]
+text = "I'm just looking, thanks."
+tags = ["daily", "smalltalk"]
+note = "polite reply to a shop assistant; browsing, not buying yet."
+
+[[sentence]]
+text = "Can I have the bill, please?"
+tags = ["requests", "daily"]
+note = "bill = the check at a restaurant (US: check)."
+
+[[sentence]]
+text = "Is this seat taken?"
+tags = ["questions", "smalltalk"]
+note = "asking if a seat is free."
+
+[[sentence]]
+text = "Excuse me, where's the restroom?"
+tags = ["questions", "daily"]
+note = "restroom = toilet (US English)."
+
+[[sentence]]
+text = "Keep the change."
+tags = ["daily"]
+note = "told to staff: keep the extra money as a tip."
+
+[[sentence]]
+text = "How do I get to the station?"
+tags = ["questions", "daily"]
+note = "asking for directions."
+
+[[sentence]]
+text = "Is it far from here?"
+tags = ["questions", "daily"]
+note = "asking about distance."
+
+[[sentence]]
+text = "You can't miss it."
+tags = ["daily"]
+note = "it's so easy to find you'll definitely see it."
+
+[[sentence]]
+text = "Turn left at the next corner."
+tags = ["daily"]
+note = "giving directions; corner = street junction."
+
+[[sentence]]
+text = "I think I'm lost."
+tags = ["daily"]
+note = "I don't know where I am."
+
+[[sentence]]
+text = "Hold on a second."
+tags = ["requests", "work"]
+note = "hold on = wait a moment."
+
+[[sentence]]
+text = "Can you hear me okay?"
+tags = ["questions", "work"]
+note = "checking the phone or call connection."
+
+[[sentence]]
+text = "I'll call you back later."
+tags = ["future", "work"]
+note = "call back = return a call."
+
+[[sentence]]
+text = "Sorry, you've got the wrong number."
+tags = ["daily"]
+note = "phone phrase: you dialed the wrong person."
+
+[[sentence]]
+text = "Let's touch base tomorrow."
+tags = ["work", "future"]
+note = "touch base = check in briefly; business idiom."
+
+[[sentence]]
+text = "I'll send you an email."
+tags = ["work", "future"]
+note = "a simple future plan."
+
+[[sentence]]
+text = "Can we reschedule?"
+tags = ["work", "questions"]
+note = "short form: move it to another time."
+
+[[sentence]]
+text = "I'm swamped at the moment."
+tags = ["work", "smalltalk"]
+note = "swamped = extremely busy."
+
+[[sentence]]
+text = "I'll keep you posted."
+tags = ["work", "future"]
+note = "keep posted = keep informed of updates."
+
+[[sentence]]
+text = "No worries at all."
+tags = ["smalltalk"]
+note = "very relaxed it's fine; common in UK and Australia."
+
+[[sentence]]
+text = "That makes sense."
+tags = ["opinions"]
+note = "that is logical or clear."
+
+[[sentence]]
+text = "Good for you!"
+tags = ["smalltalk", "opinions"]
+note = "congratulating someone; can be sincere or sarcastic."
+
+[[sentence]]
+text = "What a shame."
+tags = ["opinions", "smalltalk"]
+note = "expressing disappointment; shame = pity."
+
+[[sentence]]
+text = "Better late than never."
+tags = ["smalltalk"]
+note = "idiom: late is still better than not at all."
+
+[[sentence]]
+text = "Fingers crossed!"
+tags = ["smalltalk", "future"]
+note = "hoping for good luck."
+
+[[sentence]]
+text = "Same here."
+tags = ["smalltalk", "opinions"]
+note = "me too; I feel the same."
+
+[[sentence]]
+text = "It happens."
+tags = ["smalltalk"]
+note = "reassuring: such things occur, don't worry."
+
+[[sentence]]
+text = "What are you up to this weekend?"
+tags = ["questions", "future", "smalltalk"]
+note = "up to = doing or planning; casual."
+
+[[sentence]]
+text = "Let's grab lunch sometime."
+tags = ["future", "smalltalk"]
+note = "grab lunch = meet for lunch, casual."
+
+[[sentence]]
+text = "I'm really looking forward to it."
+tags = ["future", "opinions"]
+note = "look forward to = feel excited about a future event."
+
+[[sentence]]
+text = "Can we make it a bit later?"
+tags = ["requests", "future"]
+note = "make it = arrange the time; later = a later hour."
+
+[[sentence]]
+text = "I'd like to check in for my flight."
+tags = ["travel", "airport", "requests"]
+note = "check in = register at the airport."
+
+[[sentence]]
+text = "Is this the line for security?"
+tags = ["travel", "airport", "questions"]
+note = "line = queue (US); security = airport screening."
+
+[[sentence]]
+text = "What gate does it leave from?"
+tags = ["travel", "airport", "questions"]
+note = "gate = boarding point at the airport."
+
+[[sentence]]
+text = "My flight's been delayed."
+tags = ["travel", "airport"]
+note = "delayed = later than scheduled."
+
+[[sentence]]
+text = "I have a connecting flight."
+tags = ["travel", "airport"]
+note = "connecting flight = a second flight to reach your destination."
+
+[[sentence]]
+text = "How long is the layover?"
+tags = ["travel", "airport", "questions"]
+note = "layover = the wait between connecting flights."
+
+[[sentence]]
+text = "I'd like a window seat, please."
+tags = ["travel", "airport", "requests"]
+note = "window seat = next to the window on a plane."
+
+[[sentence]]
+text = "Where's the baggage claim?"
+tags = ["travel", "airport", "questions"]
+note = "baggage claim = where you collect luggage after landing."
+
+[[sentence]]
+text = "My luggage didn't show up."
+tags = ["travel", "airport"]
+note = "show up = arrive or appear; the bags were lost."
+
+[[sentence]]
+text = "Could you help me put this in the overhead bin?"
+tags = ["travel", "airport", "requests"]
+note = "overhead bin = storage above plane seats."
+
+[[sentence]]
+text = "Do I need to declare anything?"
+tags = ["travel", "airport", "questions"]
+note = "declare = report goods at customs."
+
+[[sentence]]
+text = "Where can I catch a taxi?"
+tags = ["travel", "questions"]
+note = "catch a taxi = find and take a taxi."
+
+[[sentence]]
+text = "Is breakfast included?"
+tags = ["travel", "questions"]
+note = "asking if breakfast comes with the hotel room."
+
+[[sentence]]
+text = "What time is check-out?"
+tags = ["travel", "questions"]
+note = "check-out = when you must leave the hotel room."
+
+[[sentence]]
+text = "Could you call me a cab?"
+tags = ["travel", "requests"]
+note = "cab = taxi; asking staff to order one."
+
+[[sentence]]
+text = "I think I missed my stop."
+tags = ["travel"]
+note = "missed my stop = went past where I should get off."
+
+[[sentence]]
+text = "Does this train go to the city center?"
+tags = ["travel", "questions"]
+note = "checking the train destination."
+
+[[sentence]]
+text = "It's a piece of cake."
+tags = ["idioms"]
+note = "idiom: very easy."
+
+[[sentence]]
+text = "Break a leg!"
+tags = ["idioms"]
+note = "idiom: good luck, especially before a performance."
+
+[[sentence]]
+text = "I'm feeling under the weather."
+tags = ["idioms"]
+note = "idiom: feeling slightly ill."
+
+[[sentence]]
+text = "Let's call it a day."
+tags = ["idioms", "work"]
+note = "idiom: stop working for today."
+
+[[sentence]]
+text = "It costs an arm and a leg."
+tags = ["idioms"]
+note = "idiom: very expensive."
+
+[[sentence]]
+text = "Hang in there."
+tags = ["idioms", "smalltalk"]
+note = "idiom: stay strong, don't give up."
+
+[[sentence]]
+text = "That rings a bell."
+tags = ["idioms"]
+note = "idiom: sounds familiar, I vaguely remember it."
+
+[[sentence]]
+text = "I'm on the fence about it."
+tags = ["idioms", "opinions"]
+note = "idiom: undecided."
+
+[[sentence]]
+text = "Let's play it by ear."
+tags = ["idioms", "future"]
+note = "idiom: decide as we go, without a fixed plan."
+
+[[sentence]]
+text = "It's a no-brainer."
+tags = ["idioms", "opinions"]
+note = "idiom: an obvious, easy decision."
+
+[[sentence]]
+text = "Let's cut to the chase."
+tags = ["idioms", "work"]
+note = "idiom: get to the point, skip the details."
+
+[[sentence]]
+text = "Speak of the devil!"
+tags = ["idioms", "smalltalk"]
+note = "idiom: said when someone you were just discussing appears."
+
+[[sentence]]
+text = "It's not really my cup of tea."
+tags = ["idioms", "opinions"]
+note = "idiom: not something I enjoy."
+
+[[sentence]]
+text = "You totally nailed it."
+tags = ["idioms"]
+note = "nail it = do it perfectly; totally = completely."
+
+[[sentence]]
+text = "It slipped my mind."
+tags = ["idioms"]
+note = "idiom: I forgot it."
+
+[[sentence]]
+text = "Long story short, we made it."
+tags = ["idioms"]
+note = "long story short = to summarize; made it = succeeded or arrived."
+
+[[sentence]]
+text = "It is what it is."
+tags = ["idioms", "opinions"]
+note = "idiom: accept the situation, it can't be changed."
+
+[[sentence]]
+text = "Don't sweat it."
+tags = ["idioms", "smalltalk"]
+note = "idiom: don't worry about it."
+
+[[sentence]]
+text = "That's the last straw."
+tags = ["idioms"]
+note = "idiom: the final problem that ends your patience."
+
+[[sentence]]
+text = "I'm beat."
+tags = ["idioms"]
+note = "slang: very tired."
+
+[[sentence]]
+text = "I dunno, maybe."
+tags = ["casual"]
+note = "dunno = don't know, casual reduced form."
+
+[[sentence]]
+text = "I'm gonna grab a coffee."
+tags = ["casual", "future"]
+note = "gonna = going to; grab = quickly get."
+
+[[sentence]]
+text = "D'you wanna come along?"
+tags = ["casual", "questions"]
+note = "wanna = want to; come along = join me."
+
+[[sentence]]
+text = "I gotta run."
+tags = ["casual"]
+note = "gotta = got to; I must leave quickly."
+
+[[sentence]]
+text = "Lemme think about it."
+tags = ["casual"]
+note = "lemme = let me, casual."
+
+[[sentence]]
+text = "Gimme a sec."
+tags = ["casual"]
+note = "gimme = give me; sec = second, a short moment."
+
+[[sentence]]
+text = "It's kinda cold today."
+tags = ["casual"]
+note = "kinda = kind of, a little."
+
+[[sentence]]
+text = "C'mon, we're gonna be late!"
+tags = ["casual"]
+note = "c'mon = come on, hurry up."
+
+[[sentence]]
+text = "Gotcha, no problem."
+tags = ["casual"]
+note = "gotcha = got you, I understand."
+
+[[sentence]]
+text = "What's up?"
+tags = ["casual", "greetings"]
+note = "casual greeting = how are you, what's happening."
+
+[[sentence]]
+text = "No way, for real?"
+tags = ["casual"]
+note = "expressing surprise; for real = really?"
+
+[[sentence]]
+text = "My bad, I forgot."
+tags = ["casual"]
+note = "my bad = my fault, a casual apology."
+
+[[sentence]]
+text = "I'm good, thanks."
+tags = ["casual"]
+note = "I'm fine, or no thank you / all good."
+
+[[sentence]]
+text = "Sounds like a plan."
+tags = ["casual", "smalltalk"]
+note = "I agree, let's do that."
+
+[[sentence]]
+text = "You bet."
+tags = ["casual"]
+note = "casual yes, definitely; also you're welcome."
+
+[[sentence]]
+text = "Hang on a sec."
+tags = ["casual"]
+note = "wait a moment, casual."
+
+[[sentence]]
+text = "Wanna hang out later?"
+tags = ["casual", "questions", "future"]
+note = "hang out = spend casual time together."
+
+[[sentence]]
+text = "I'm kinda tired, gonna head home."
+tags = ["casual"]
+note = "head home = go home."
+
+[[sentence]]
+text = "Catch you later!"
+tags = ["casual"]
+note = "casual goodbye = see you later."
+
+[[sentence]]
+text = "No biggie."
+tags = ["casual"]
+note = "slang: no big deal, not important."
+
+[[sentence]]
+text = "I'm down for that."
+tags = ["casual"]
+note = "down for = willing or keen to do it."
+
+[[sentence]]
+text = "Let's get going."
+tags = ["casual"]
+note = "let's start or leave now."
+
+[[sentence]]
+text = "Totally."
+tags = ["casual", "smalltalk"]
+note = "casual strong agreement = absolutely."
+
+[[sentence]]
+text = "For sure."
+tags = ["casual", "smalltalk"]
+note = "casual yes, definitely."
+
+[[sentence]]
+text = "Sure thing."
+tags = ["casual", "smalltalk"]
+note = "casual yes, no problem."
+
+[[sentence]]
+text = "You got it."
+tags = ["casual", "smalltalk"]
+note = "casual okay, I'll do it; or understood."
+
+[[sentence]]
+text = "I know, right?"
+tags = ["casual", "smalltalk"]
+note = "agreeing enthusiastically with someone."
+
+[[sentence]]
+text = "Oh, totally."
+tags = ["casual", "smalltalk"]
+note = "casual emphatic agreement."
+
+[[sentence]]
+text = "Fair enough."
+tags = ["casual", "opinions"]
+note = "okay, that's a reasonable point, I accept it."
+
+[[sentence]]
+text = "No way!"
+tags = ["casual", "smalltalk"]
+note = "expressing disbelief or refusal."
+
+[[sentence]]
+text = "Are you serious?"
+tags = ["casual", "questions"]
+note = "expressing surprise, or checking if true."
+
+[[sentence]]
+text = "You're kidding me."
+tags = ["casual"]
+note = "I can't believe it; kid = joke."
+
+[[sentence]]
+text = "Wait, what?"
+tags = ["casual"]
+note = "expressing surprise or confusion."
+
+[[sentence]]
+text = "That's crazy."
+tags = ["casual", "smalltalk"]
+note = "reacting to something surprising."
+
+[[sentence]]
+text = "Oh my gosh."
+tags = ["casual"]
+note = "softer version of oh my god; surprise."
+
+[[sentence]]
+text = "Get out of here, really?"
+tags = ["casual"]
+note = "get out of here = I can't believe it (playful)."
+
+[[sentence]]
+text = "That's awesome."
+tags = ["casual", "slang", "opinions"]
+note = "awesome = great, excellent."
+
+[[sentence]]
+text = "That's so cool."
+tags = ["casual", "slang", "opinions"]
+note = "cool = nice or impressive, casual."
+
+[[sentence]]
+text = "That's sick!"
+tags = ["casual", "slang"]
+note = "slang: sick = awesome, very cool (positive)."
+
+[[sentence]]
+text = "That's dope."
+tags = ["casual", "slang"]
+note = "slang: dope = excellent, cool."
+
+[[sentence]]
+text = "Let's hang out sometime."
+tags = ["casual", "slang", "future"]
+note = "hang out = spend casual time together."
+
+[[sentence]]
+text = "Hit me up later."
+tags = ["casual", "slang"]
+note = "slang: hit me up = contact or message me."
+
+[[sentence]]
+text = "It's chill."
+tags = ["casual", "slang"]
+note = "slang: chill = relaxed, no problem."
+
+[[sentence]]
+text = "It's no big deal."
+tags = ["casual", "slang"]
+note = "not important, don't worry."
+
+[[sentence]]
+text = "It's kind of a big deal."
+tags = ["casual", "slang"]
+note = "actually quite important (often said as understatement)."
+
+[[sentence]]
+text = "I'm wiped."
+tags = ["casual", "slang"]
+note = "slang: wiped out = exhausted."
+
+[[sentence]]
+text = "Let's grab a bite."
+tags = ["casual", "slang", "future"]
+note = "grab a bite = get something quick to eat."
+
+[[sentence]]
+text = "I gotta bounce."
+tags = ["casual", "slang"]
+note = "slang: bounce = leave; I have to go."
+
+[[sentence]]
+text = "What's good?"
+tags = ["casual", "slang", "greetings"]
+note = "slang greeting = what's up, how are you."
+
+[[sentence]]
+text = "I mean, it's fine."
+tags = ["casual", "fillers"]
+note = "I mean = filler to explain or soften; it's okay."
+
+[[sentence]]
+text = "Honestly, I'm not sure."
+tags = ["casual", "fillers", "opinions"]
+note = "honestly = frankly; expressing doubt."
+
+[[sentence]]
+text = "To be honest, I totally forgot."
+tags = ["casual", "fillers"]
+note = "admitting frankly that you forgot."
+
+[[sentence]]
+text = "You know what I mean?"
+tags = ["casual", "fillers", "questions"]
+note = "filler checking the listener follows you."
+
+[[sentence]]
+text = "Like, seriously?"
+tags = ["casual", "fillers"]
+note = "like = filler; seriously = expressing disbelief."
+
+[[sentence]]
+text = "I was like, no way."
+tags = ["casual", "fillers"]
+note = "be like = informal way to report speech or a reaction."
+
+[[sentence]]
+text = "It's just, you know, complicated."
+tags = ["casual", "fillers"]
+note = "you know = a hesitation filler."
+
+[[sentence]]
+text = "Anyway, where was I?"
+tags = ["casual", "fillers"]
+note = "anyway = returning to the topic after a digression."
+
+[[sentence]]
+text = "So, yeah, that's the plan."
+tags = ["casual", "fillers"]
+note = "so and yeah = casual fillers wrapping up."
+
+[[sentence]]
+text = "At the end of the day, it's fine."
+tags = ["casual", "fillers", "opinions"]
+note = "idiom: when all is considered, ultimately."
+
+[[sentence]]
+text = "You betcha."
+tags = ["casual"]
+note = "casual emphatic yes (US)."
+
+[[sentence]]
+text = "I oughta get going."
+tags = ["casual"]
+note = "oughta = ought to; I should leave."
+
+[[sentence]]
+text = "It's sorta like that."
+tags = ["casual"]
+note = "sorta = sort of, more or less."
+
+[[sentence]]
+text = "You gotta be kidding me."
+tags = ["casual"]
+note = "expressing disbelief; gotta = have got to."
+
+[[sentence]]
+text = "Whatcha up to?"
+tags = ["casual", "questions"]
+note = "whatcha = what are you; what are you doing?"
+
+[[sentence]]
+text = "See ya later."
+tags = ["casual"]
+note = "see ya = see you, casual goodbye."
+
+[[sentence]]
+text = "Lemme get back to ya."
+tags = ["casual", "work"]
+note = "ya = you; I'll reply to you later."
+
+[[sentence]]
+text = "Hang on, gimme a sec."
+tags = ["casual"]
+note = "wait, give me a second."
+
+[[sentence]]
+text = "Could you put me through to support?"
+tags = ["phone", "work", "requests"]
+note = "put through = connect by phone to someone."
+
+[[sentence]]
+text = "I've been on hold forever."
+tags = ["phone", "daily"]
+note = "on hold = waiting on the phone; forever = a very long time."
+
+[[sentence]]
+text = "You're breaking up."
+tags = ["phone"]
+note = "breaking up = the call signal keeps cutting out."
+
+[[sentence]]
+text = "Let me transfer you."
+tags = ["phone", "work"]
+note = "transfer = pass your call to another person."
+
+[[sentence]]
+text = "Please hold while I check."
+tags = ["phone", "work", "requests"]
+note = "hold = wait on the line."
+
+[[sentence]]
+text = "Can I take a message?"
+tags = ["phone", "work", "questions"]
+note = "phone phrase: offer to write a message for someone absent."
+
+[[sentence]]
+text = "I'll have someone call you back."
+tags = ["phone", "work", "future"]
+note = "have someone do = arrange for them to do it."
+
+[[sentence]]
+text = "Is now a good time to talk?"
+tags = ["phone", "questions"]
+note = "checking if the person is free to speak."
+
+[[sentence]]
+text = "Sorry, I missed your call."
+tags = ["phone", "daily"]
+note = "missed = didn't answer in time."
+
+[[sentence]]
+text = "Can you speak up a little?"
+tags = ["phone", "requests"]
+note = "speak up = talk louder."
+
+[[sentence]]
+text = "Press one for English."
+tags = ["phone"]
+note = "an automated phone menu instruction."
+
+[[sentence]]
+text = "May I ask who's calling?"
+tags = ["phone", "work", "questions"]
+note = "polite phone phrase asking the caller's name."
+
+[[sentence]]
+text = "Let me put you on hold for a moment."
+tags = ["phone", "work"]
+note = "put on hold = make you wait on the line."
+
+[[sentence]]
+text = "Thanks for your patience."
+tags = ["phone", "work", "smalltalk"]
+note = "polite phrase thanking someone for waiting."
+
+[[sentence]]
+text = "You're on mute."
+tags = ["work"]
+note = "mute = your mic is off, we can't hear you."
+
+[[sentence]]
+text = "Can everyone see my screen?"
+tags = ["work", "questions"]
+note = "common video-call check when sharing a screen."
+
+[[sentence]]
+text = "Sorry, you cut out for a second."
+tags = ["work"]
+note = "cut out = the audio or video dropped briefly."
+
+[[sentence]]
+text = "Can you all hear me?"
+tags = ["work", "questions"]
+note = "checking audio on a call."
+
+[[sentence]]
+text = "Let's give everyone a minute to join."
+tags = ["work"]
+note = "waiting for participants to connect."
+
+[[sentence]]
+text = "Could you share that link in the chat?"
+tags = ["work", "requests"]
+note = "chat = the text box in a video meeting."
+
+[[sentence]]
+text = "Let's take this offline."
+tags = ["work", "idioms"]
+note = "idiom: discuss it later and privately, not in the meeting."
+
+[[sentence]]
+text = "Can we go back a slide?"
+tags = ["work", "questions", "requests"]
+note = "slide = a page in a presentation."
+
+[[sentence]]
+text = "Let's wrap up."
+tags = ["work"]
+note = "wrap up = finish or conclude."
+
+[[sentence]]
+text = "Any questions before we finish?"
+tags = ["work", "questions"]
+note = "a common closing line of a meeting."
+
+[[sentence]]
+text = "I'll follow up by email."
+tags = ["work", "future"]
+note = "follow up = send more info or check later."
+
+[[sentence]]
+text = "Let's circle back next week."
+tags = ["work", "future"]
+note = "circle back = return to this topic later."
+
+[[sentence]]
+text = "Sorry, go ahead."
+tags = ["work", "smalltalk"]
+note = "go ahead = please continue, you speak first."
+
+[[sentence]]
+text = "I think there's a bit of a lag."
+tags = ["work"]
+note = "lag = a delay in the call connection."
+
+[[sentence]]
+text = "Did you figure out the problem?"
+tags = ["casual", "questions", "idioms"]
+note = "figure out = come to understand; discover or solve sth"
+
+[[sentence]]
+text = "FYI"
+tags = ["acronym", "casual", "work", "added-2026-06-17"]
+note = "FYI = for your information; heads-up, no action needed"
+
+[[sentence]]
+text = "ASAP"
+tags = ["acronym", "work", "requests", "added-2026-06-17"]
+note = "ASAP = as soon as possible; natives often say ay-sap"
+
+[[sentence]]
+text = "DIY"
+tags = ["acronym", "casual", "added-2026-06-17"]
+note = "DIY = do it yourself"
+
+[[sentence]]
+text = "AKA"
+tags = ["acronym", "casual", "added-2026-06-17"]
+note = "AKA = also known as"
+
+[[sentence]]
+text = "ETA"
+tags = ["acronym", "travel", "work", "added-2026-06-17"]
+note = "ETA = estimated time of arrival; when sth will arrive or be done"
+
+[[sentence]]
+text = "RSVP"
+tags = ["acronym", "requests", "added-2026-06-17"]
+note = "RSVP = please reply (from French repondez s'il vous plait)"
+
+[[sentence]]
+text = "FAQ"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "FAQ = frequently asked questions"
+
+[[sentence]]
+text = "TBH"
+tags = ["acronym", "slang", "casual", "opinions", "added-2026-06-17"]
+note = "TBH = to be honest; texting slang"
+
+[[sentence]]
+text = "IMO"
+tags = ["acronym", "slang", "casual", "opinions", "added-2026-06-17"]
+note = "IMO = in my opinion (IMHO = in my humble opinion)"
+
+[[sentence]]
+text = "BTW"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "BTW = by the way"
+
+[[sentence]]
+text = "IDK"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "IDK = I don't know"
+
+[[sentence]]
+text = "TMI"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "TMI = too much information; that's more than I wanted to know"
+
+[[sentence]]
+text = "POV"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "POV = point of view"
+
+[[sentence]]
+text = "FOMO"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "FOMO = fear of missing out; said as foe-moe"
+
+[[sentence]]
+text = "YOLO"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "YOLO = you only live once; said as yo-lo"
+
+[[sentence]]
+text = "TGIF"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "TGIF = thank God it's Friday"
+
+[[sentence]]
+text = "BRB"
+tags = ["acronym", "slang", "casual", "phone", "added-2026-06-17"]
+note = "BRB = be right back; chat shorthand"
+
+[[sentence]]
+text = "LOL"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "LOL = laughing out loud; marks sth funny in text"
+
+[[sentence]]
+text = "OMG"
+tags = ["acronym", "slang", "casual", "added-2026-06-17"]
+note = "OMG = oh my God; surprise or shock"
+
+[[sentence]]
+text = "WTF"
+tags = ["acronym", "slang", "casual", "vulgar", "added-2026-06-17"]
+note = "WTF = what the f***; strong, rude; close friends or anger only"
+
+[[sentence]]
+text = "WFH"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "WFH = work from home"
+
+[[sentence]]
+text = "PTO"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "PTO = paid time off; vacation/leave from work"
+
+[[sentence]]
+text = "EOD"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "EOD = end of day; deadline by close of the workday"
+
+[[sentence]]
+text = "OOO"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "OOO = out of office; away, not working"
+
+[[sentence]]
+text = "TBD"
+tags = ["acronym", "work", "added-2026-06-17"]
+note = "TBD = to be determined (TBA = to be announced)"
+
+[[sentence]]
+text = "DOB"
+tags = ["acronym", "daily", "added-2026-06-17"]
+note = "DOB = date of birth; common on forms"
