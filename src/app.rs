@@ -1,4 +1,4 @@
-use crate::sentence::{Config, Sentence, Settings};
+use crate::sentence::{Config, Layout, Sentence, Settings};
 use rand::rng;
 use rand::seq::SliceRandom;
 use std::process::{Child, Command};
@@ -46,7 +46,8 @@ pub struct App {
     pub set_voice: String,         // Settings buffer: voice
     pub set_rate: String,          // Settings buffer: rate (digits)
     pub set_star_weight: String,   // Settings buffer: star weight (digits)
-    pub set_field: usize,          // active Settings field: 0 voice, 1 rate, 2 star weight
+    pub set_layout: Layout,        // Settings buffer: chosen layout (toggled, not typed)
+    pub set_field: usize,          // active Settings field: 0 voice, 1 rate, 2 weight, 3 layout
 }
 
 impl App {
@@ -93,8 +94,17 @@ impl App {
             set_voice: String::new(),
             set_rate: String::new(),
             set_star_weight: String::new(),
+            set_layout: Self::DEFAULT_LAYOUT,
             set_field: 0,
         }
+    }
+
+    // The layout to use when the setting is absent.
+    const DEFAULT_LAYOUT: Layout = Layout::Stacked;
+
+    // The effective screen layout (the configured one, or the default).
+    pub fn layout(&self) -> Layout {
+        self.settings.layout.unwrap_or(Self::DEFAULT_LAYOUT)
     }
 
     // Real index (into `sentences`) of the currently selected visible row.
@@ -171,6 +181,7 @@ impl App {
             .star_weight
             .map(|w| w.to_string())
             .unwrap_or_default();
+        self.set_layout = self.layout();
         self.set_field = 0;
         self.mode = Mode::Settings;
     }
@@ -180,22 +191,40 @@ impl App {
         self.mode = Mode::Normal;
     }
 
-    // Type into the active Settings field. The numeric fields accept digits only.
+    // Type into the active Settings field. The numeric fields accept digits
+    // only; the layout field is a toggle, so it ignores typed characters.
     pub fn settings_char(&mut self, c: char) {
+        if self.set_field == 3 {
+            return;
+        }
         if self.set_field != 0 && !c.is_ascii_digit() {
             return;
         }
         self.settings_buffer_mut().push(c);
     }
 
-    // Backspace in the active Settings field.
+    // Backspace in the active Settings field (no-op on the layout toggle).
     pub fn settings_backspace(&mut self) {
+        if self.set_field == 3 {
+            return;
+        }
         self.settings_buffer_mut().pop();
     }
 
-    // Enter in Settings mode: advance voice -> rate -> star weight, then save.
+    // Flip the layout toggle (only meaningful on the layout field).
+    pub fn settings_toggle_layout(&mut self) {
+        if self.set_field != 3 {
+            return;
+        }
+        self.set_layout = match self.set_layout {
+            Layout::Classic => Layout::Stacked,
+            Layout::Stacked => Layout::Classic,
+        };
+    }
+
+    // Enter in Settings mode: advance voice -> rate -> weight -> layout, then save.
     pub fn settings_enter(&mut self) {
-        if self.set_field < 2 {
+        if self.set_field < 3 {
             self.set_field += 1;
         } else {
             self.commit_settings();
@@ -213,6 +242,10 @@ impl App {
         // Digit-only buffers: a valid parse means set, empty means unset.
         self.settings.rate = self.set_rate.trim().parse().ok();
         self.settings.star_weight = self.set_star_weight.trim().parse().ok();
+        // Store the layout only when it differs from the default, so files that
+        // never touched it stay minimal (and round-trip to the same default).
+        self.settings.layout =
+            (self.set_layout != Self::DEFAULT_LAYOUT).then_some(self.set_layout);
         let _ = crate::sentence::save_all(&self.settings, &self.sentences);
         self.mode = Mode::Normal;
     }

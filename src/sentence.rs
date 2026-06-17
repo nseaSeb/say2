@@ -23,11 +23,22 @@ fn is_false(b: &bool) -> bool {
     !*b
 }
 
+// How the main screen is arranged. `Stacked` is a single vertical pile
+// (header, detail, filter, then the list full-width); `Classic` is the
+// list on the left with a detail panel on the right. Serialized as the
+// lowercase variant name, e.g. `layout = "classic"`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Layout {
+    Classic,
+    Stacked,
+}
+
 // Optional settings, read from a `[settings]` table at the top of the file.
 // `voice` and `rate` map straight onto `say` flags: `-v <voice>` and
 // `-r <rate>` (words per minute). `star_weight` controls how many times a
-// starred sentence is weighted in the auto-play shuffle. Absent fields fall
-// back to defaults.
+// starred sentence is weighted in the auto-play shuffle. `layout` picks the
+// screen arrangement. Absent fields fall back to defaults.
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct Settings {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -36,11 +47,16 @@ pub struct Settings {
     pub rate: Option<u32>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub star_weight: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Layout>,
 }
 
 impl Settings {
     fn is_default(&self) -> bool {
-        self.voice.is_none() && self.rate.is_none() && self.star_weight.is_none()
+        self.voice.is_none()
+            && self.rate.is_none()
+            && self.star_weight.is_none()
+            && self.layout.is_none()
     }
 }
 
@@ -225,6 +241,7 @@ mod tests {
             voice: Some("Daniel".to_string()),
             rate: Some(150),
             star_weight: Some(4),
+            layout: Some(Layout::Classic),
         };
         let sentences = vec![Sentence {
             text: "Hi".to_string(),
@@ -244,6 +261,7 @@ mod tests {
         assert_eq!(parsed.settings.voice.as_deref(), Some("Daniel"));
         assert_eq!(parsed.settings.rate, Some(150));
         assert_eq!(parsed.settings.star_weight, Some(4));
+        assert_eq!(parsed.settings.layout, Some(Layout::Classic));
         assert_eq!(parsed.sentence.len(), 1);
         assert_eq!(parsed.sentence[0].note, "a note");
         assert!(parsed.sentence[0].starred);

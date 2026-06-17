@@ -88,146 +88,10 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
             _ => 0.0,
         };
 
-        // 1. DRAW
-        terminal.draw(|frame| {
-            use ratatui::layout::{Constraint, Direction, Layout};
-            use ratatui::text::{Line, Span};
-            use ratatui::widgets::{Gauge, Paragraph};
-
-            // Three rows: top bar, main area, footer. While playing the top
-            // bar is one row taller to fit the sentence being read below the
-            // gauge.
-            let top_height = if app.playing { 4 } else { 3 };
-            let chunks = Layout::default()
-                .direction(Direction::Vertical)
-                .constraints([
-                    Constraint::Length(top_height),
-                    Constraint::Min(0),
-                    Constraint::Length(1),
-                ])
-                .split(frame.area());
-
-            // --- Top: a pause gauge while playing, else the search box. ---
-            if app.playing {
-                // Split the top bar into the gauge (3 rows) and a single row
-                // below it showing the sentence currently being read.
-                let top = Layout::default()
-                    .direction(Direction::Vertical)
-                    .constraints([Constraint::Length(3), Constraint::Length(1)])
-                    .split(chunks[0]);
-
-                let gauge = Gauge::default()
-                    .block(Block::default().borders(Borders::ALL).title(format!(
-                        "PLAYING  ·  pause {}s (+/-)  ·  speed {}wpm (</>)  ·  space stop",
-                        app.pause_secs,
-                        app.rate_wpm()
-                    )))
-                    .gauge_style(Style::default().fg(Color::Cyan))
-                    .ratio(progress)
-                    .label(format!("{:.0}%", progress * 100.0));
-                frame.render_widget(gauge, top[0]);
-
-                // The sentence being read, below the bar.
-                let now_playing = app
-                    .now_playing()
-                    .map(|s| Line::from(vec![
-                        Span::raw("🔊 "),
-                        Span::styled(
-                            s.text.clone(),
-                            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
-                        ),
-                    ]))
-                    .unwrap_or_else(|| {
-                        Line::from(Span::styled(
-                            "🔊 …",
-                            Style::default().fg(Color::DarkGray),
-                        ))
-                    });
-                frame.render_widget(Paragraph::new(now_playing), top[1]);
-            } else {
-                let (title, line) = match app.mode {
-                    app::Mode::Search => (
-                        format!(
-                            "Search (Esc exit)  ·  pause {}s (+/-)  ·  speed {}wpm (</>)",
-                            app.pause_secs,
-                            app.rate_wpm()
-                        ),
-                        format!("{}_", app.filter),
-                    ),
-                    _ => (
-                        format!(
-                            "Filter  ·  pause {}s (+/-)  ·  speed {}wpm (</>)",
-                            app.pause_secs,
-                            app.rate_wpm()
-                        ),
-                        app.filter.clone(),
-                    ),
-                };
-                let search =
-                    Paragraph::new(line).block(Block::default().borders(Borders::ALL).title(title));
-                frame.render_widget(search, chunks[0]);
-            }
-
-            // --- Middle: list (left) + detail panel (right). ---
-            let middle = Layout::default()
-                .direction(Direction::Horizontal)
-                .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
-                .split(chunks[1]);
-
-            let items: Vec<ListItem> = matches
-                .iter()
-                .map(|&i| {
-                    let s = &app.sentences[i];
-                    let mut spans = Vec::new();
-                    if speaking == Some(i) {
-                        spans.push(Span::raw("🔊 "));
-                    }
-                    if s.starred {
-                        spans.push(Span::styled("★ ", Style::default().fg(Color::Yellow)));
-                    }
-                    spans.push(Span::raw(s.text.clone()));
-                    if !s.note.is_empty() {
-                        spans.push(Span::styled(
-                            format!("  — {}", s.note),
-                            Style::default().fg(Color::DarkGray),
-                        ));
-                    }
-                    ListItem::new(Line::from(spans))
-                })
-                .collect();
-
-            let list = List::new(items)
-                .block(Block::default().borders(Borders::ALL).title(format!(
-                    "say2 ({}/{})",
-                    matches.len(),
-                    app.sentences.len()
-                )))
-                .highlight_style(
-                    Style::default()
-                        .fg(Color::Black)
-                        .bg(Color::Cyan)
-                        .add_modifier(Modifier::BOLD),
-                )
-                .highlight_symbol("> ");
-
-            let mut state = ListState::default();
-            if !matches.is_empty() {
-                state.select(Some(app.selected));
-            }
-            frame.render_stateful_widget(list, middle[0], &mut state);
-            render_detail(frame, middle[1], app);
-
-            // --- Footer: context-sensitive shortcuts (keys highlighted). ---
-            frame.render_widget(Paragraph::new(footer_line(app, chunks[2].width)), chunks[2]);
-
-            // --- Overlay a popup on top of everything else. ---
-            match app.mode {
-                app::Mode::Add => render_add_popup(frame, app),
-                app::Mode::ConfirmDelete => render_confirm_popup(frame, app),
-                app::Mode::Help => render_help_popup(frame),
-                app::Mode::Settings => render_settings_popup(frame, app),
-                _ => {}
-            }
+        // 1. DRAW — dispatch on the chosen layout.
+        terminal.draw(|frame| match app.layout() {
+            sentence::Layout::Classic => draw_classic(frame, app, &matches, speaking, progress),
+            sentence::Layout::Stacked => draw_stacked(frame, app, &matches, speaking, progress),
         })?;
 
         // 2. POLL for a key for up to 100ms (instead of blocking forever).
@@ -310,6 +174,9 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                     KeyCode::Esc => app.cancel_settings(),
                     KeyCode::Enter => app.settings_enter(),
                     KeyCode::Backspace => app.settings_backspace(),
+                    // The layout field is a toggle: arrows (or space) flip it.
+                    KeyCode::Left | KeyCode::Right => app.settings_toggle_layout(),
+                    KeyCode::Char(' ') if app.set_field == 3 => app.settings_toggle_layout(),
                     KeyCode::Char(c) => app.settings_char(c),
                     _ => {}
                 },
@@ -325,6 +192,242 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
             app.advance();
             pause_start = None; // re-armed when this sentence finishes
         }
+    }
+}
+
+// --- Classic layout: list on the left, detail panel on the right. ---
+fn draw_classic(
+    frame: &mut ratatui::Frame,
+    app: &App,
+    matches: &[usize],
+    speaking: Option<usize>,
+    progress: f64,
+) {
+    use ratatui::layout::{Constraint, Direction, Layout};
+
+    // Three rows: top bar, main area, footer. While playing the top bar is one
+    // row taller to fit the sentence being read below the gauge.
+    let top_height = if app.playing { 4 } else { 3 };
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(top_height),
+            Constraint::Min(0),
+            Constraint::Length(1),
+        ])
+        .split(frame.area());
+
+    // Top: a pause gauge (+ the sentence being read) while playing, else the
+    // search box.
+    if app.playing {
+        let top = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([Constraint::Length(3), Constraint::Length(1)])
+            .split(chunks[0]);
+        render_gauge(frame, top[0], app, progress);
+        render_now_playing(frame, top[1], app);
+    } else {
+        render_search_box(frame, chunks[0], app, true);
+    }
+
+    // Middle: list (left) + detail panel (right).
+    let middle = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
+        .split(chunks[1]);
+    render_list(frame, middle[0], app, matches, speaking);
+    render_detail(frame, middle[1], app, false);
+
+    render_footer(frame, chunks[2], app);
+    render_overlays(frame, app);
+}
+
+// --- Stacked layout: one vertical pile (header, detail, filter, list). ---
+fn draw_stacked(
+    frame: &mut ratatui::Frame,
+    app: &App,
+    matches: &[usize],
+    speaking: Option<usize>,
+    progress: f64,
+) {
+    use ratatui::layout::{Constraint, Direction, Layout};
+
+    // header, detail, filter, list, footer.
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(3),
+            Constraint::Length(6),
+            Constraint::Length(3),
+            Constraint::Min(0),
+            Constraint::Length(1),
+        ])
+        .split(frame.area());
+
+    // Header: the pause gauge while playing, else a small status bar.
+    if app.playing {
+        render_gauge(frame, chunks[0], app, progress);
+    } else {
+        render_status_header(frame, chunks[0], app);
+    }
+    render_detail(frame, chunks[1], app, true);
+    render_search_box(frame, chunks[2], app, false);
+    render_list(frame, chunks[3], app, matches, speaking);
+    render_footer(frame, chunks[4], app);
+    render_overlays(frame, app);
+}
+
+// The PLAYING pause gauge (shared by both layouts).
+fn render_gauge(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App, progress: f64) {
+    use ratatui::widgets::Gauge;
+    let gauge = Gauge::default()
+        .block(Block::default().borders(Borders::ALL).title(format!(
+            "PLAYING  ·  pause {}s (+/-)  ·  speed {}wpm (</>)  ·  space stop",
+            app.pause_secs,
+            app.rate_wpm()
+        )))
+        .gauge_style(Style::default().fg(Color::Cyan))
+        .ratio(progress)
+        .label(format!("{:.0}%", progress * 100.0));
+    frame.render_widget(gauge, area);
+}
+
+// The "🔊 <sentence>" line shown below the gauge in the classic layout.
+fn render_now_playing(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App) {
+    use ratatui::text::{Line, Span};
+    use ratatui::widgets::Paragraph;
+    let line = app
+        .now_playing()
+        .map(|s| {
+            Line::from(vec![
+                Span::raw("🔊 "),
+                Span::styled(
+                    s.text.clone(),
+                    Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+                ),
+            ])
+        })
+        .unwrap_or_else(|| Line::from(Span::styled("🔊 …", Style::default().fg(Color::DarkGray))));
+    frame.render_widget(Paragraph::new(line), area);
+}
+
+// The idle status bar at the top of the stacked layout: the pause/speed
+// controls (which live in the search-box title in the classic layout).
+fn render_status_header(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App) {
+    use ratatui::widgets::Paragraph;
+    let line = format!(
+        "pause {}s (+/-)  ·  speed {}wpm (</>)",
+        app.pause_secs,
+        app.rate_wpm()
+    );
+    frame.render_widget(
+        Paragraph::new(line)
+            .style(Style::default().fg(Color::DarkGray))
+            .block(Block::default().borders(Borders::ALL).title("say2")),
+        area,
+    );
+}
+
+// The search / filter input box. When `with_controls` is set (classic layout,
+// where this box is the header) the pause/speed controls ride in the title;
+// otherwise (stacked layout) the title stays short since a separate status
+// header carries the controls.
+fn render_search_box(
+    frame: &mut ratatui::Frame,
+    area: ratatui::layout::Rect,
+    app: &App,
+    with_controls: bool,
+) {
+    use ratatui::widgets::Paragraph;
+    let controls = if with_controls {
+        format!(
+            "  ·  pause {}s (+/-)  ·  speed {}wpm (</>)",
+            app.pause_secs,
+            app.rate_wpm()
+        )
+    } else {
+        String::new()
+    };
+    let (title, line) = match app.mode {
+        app::Mode::Search => (
+            format!("Search (Esc exit){controls}"),
+            format!("{}_", app.filter),
+        ),
+        _ => (format!("Filter{controls}"), app.filter.clone()),
+    };
+    frame.render_widget(
+        Paragraph::new(line).block(Block::default().borders(Borders::ALL).title(title)),
+        area,
+    );
+}
+
+// The sentence list (shared by both layouts).
+fn render_list(
+    frame: &mut ratatui::Frame,
+    area: ratatui::layout::Rect,
+    app: &App,
+    matches: &[usize],
+    speaking: Option<usize>,
+) {
+    use ratatui::text::{Line, Span};
+
+    let items: Vec<ListItem> = matches
+        .iter()
+        .map(|&i| {
+            let s = &app.sentences[i];
+            let mut spans = Vec::new();
+            if speaking == Some(i) {
+                spans.push(Span::raw("🔊 "));
+            }
+            if s.starred {
+                spans.push(Span::styled("★ ", Style::default().fg(Color::Yellow)));
+            }
+            spans.push(Span::raw(s.text.clone()));
+            if !s.note.is_empty() {
+                spans.push(Span::styled(
+                    format!("  — {}", s.note),
+                    Style::default().fg(Color::DarkGray),
+                ));
+            }
+            ListItem::new(Line::from(spans))
+        })
+        .collect();
+
+    let list = List::new(items)
+        .block(Block::default().borders(Borders::ALL).title(format!(
+            "say2 ({}/{})",
+            matches.len(),
+            app.sentences.len()
+        )))
+        .highlight_style(
+            Style::default()
+                .fg(Color::Black)
+                .bg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        )
+        .highlight_symbol("> ");
+
+    let mut state = ListState::default();
+    if !matches.is_empty() {
+        state.select(Some(app.selected));
+    }
+    frame.render_stateful_widget(list, area, &mut state);
+}
+
+// The footer shortcut line (shared by both layouts).
+fn render_footer(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App) {
+    use ratatui::widgets::Paragraph;
+    frame.render_widget(Paragraph::new(footer_line(app, area.width)), area);
+}
+
+// Whatever popup the current mode calls for, drawn on top of everything.
+fn render_overlays(frame: &mut ratatui::Frame, app: &App) {
+    match app.mode {
+        app::Mode::Add => render_add_popup(frame, app),
+        app::Mode::ConfirmDelete => render_confirm_popup(frame, app),
+        app::Mode::Help => render_help_popup(frame),
+        app::Mode::Settings => render_settings_popup(frame, app),
+        _ => {}
     }
 }
 
@@ -578,9 +681,11 @@ fn footer_line(app: &App, max_width: u16) -> ratatui::text::Line<'static> {
     Line::from(spans)
 }
 
-// Right-hand detail panel: the selected sentence, its tags as colored chips,
-// and its note.
-fn render_detail(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App) {
+// Detail panel: the selected sentence, its tags as colored chips, and its
+// note. `compact` drops the blank separator lines and inlines the star marker
+// so it fits the short, full-width panel of the stacked layout; the roomier
+// spaced-out version is used for the tall side panel of the classic layout.
+fn render_detail(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &App, compact: bool) {
     use ratatui::text::{Line, Span};
     use ratatui::widgets::{Paragraph, Wrap};
 
@@ -596,23 +701,9 @@ fn render_detail(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &
         return;
     };
 
-    let mut lines: Vec<Line> = vec![Line::from(Span::styled(
-        s.text.clone(),
-        Style::default().add_modifier(Modifier::BOLD),
-    ))];
-    if s.starred {
-        lines.push(Line::from(Span::styled(
-            "★ starred (plays more often)",
-            Style::default().fg(Color::Yellow),
-        )));
-    }
-    lines.push(Line::raw(""));
-
-    if s.tags.is_empty() {
-        lines.push(Line::from(Span::styled(
-            "no tags",
-            Style::default().fg(Color::DarkGray),
-        )));
+    // The colored tag chips (or a dim "no tags"), reused by both modes.
+    let tag_line = if s.tags.is_empty() {
+        Line::from(Span::styled("no tags", Style::default().fg(Color::DarkGray)))
     } else {
         let mut spans = Vec::new();
         for tag in &s.tags {
@@ -622,15 +713,47 @@ fn render_detail(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, app: &
             ));
             spans.push(Span::raw(" "));
         }
-        lines.push(Line::from(spans));
-    }
+        Line::from(spans)
+    };
 
-    if !s.note.is_empty() {
-        lines.push(Line::raw(""));
+    let mut lines: Vec<Line> = Vec::new();
+    if compact {
+        // Sentence text with an inline star marker.
+        let mut first = vec![Span::styled(
+            s.text.clone(),
+            Style::default().add_modifier(Modifier::BOLD),
+        )];
+        if s.starred {
+            first.push(Span::styled("  ★", Style::default().fg(Color::Yellow)));
+        }
+        lines.push(Line::from(first));
+        lines.push(tag_line);
+        if !s.note.is_empty() {
+            lines.push(Line::from(Span::styled(
+                format!("📝 {}", s.note),
+                Style::default().fg(Color::Yellow),
+            )));
+        }
+    } else {
         lines.push(Line::from(Span::styled(
-            format!("📝 {}", s.note),
-            Style::default().fg(Color::Yellow),
+            s.text.clone(),
+            Style::default().add_modifier(Modifier::BOLD),
         )));
+        if s.starred {
+            lines.push(Line::from(Span::styled(
+                "★ starred (plays more often)",
+                Style::default().fg(Color::Yellow),
+            )));
+        }
+        lines.push(Line::raw(""));
+        lines.push(tag_line);
+        if !s.note.is_empty() {
+            lines.push(Line::raw(""));
+            lines.push(Line::from(Span::styled(
+                format!("📝 {}", s.note),
+                Style::default().fg(Color::Yellow),
+            )));
+        }
     }
 
     frame.render_widget(Paragraph::new(lines).wrap(Wrap { trim: true }), inner);
@@ -653,7 +776,7 @@ fn render_help_popup(frame: &mut ratatui::Frame) {
         ("e", "edit selected"),
         ("d", "delete selected"),
         ("m", "star / unstar (plays more often)"),
-        ("s", "settings (voice / rate / weight)"),
+        ("s", "settings (voice / rate / weight / layout)"),
         ("+ / -", "pause length between sentences"),
         ("< / >", "speaking speed (words/min)"),
         ("?", "this help"),
@@ -680,12 +803,13 @@ fn render_help_popup(frame: &mut ratatui::Frame) {
     frame.render_widget(table, area);
 }
 
-// Centered popup to edit voice / rate / star weight. Empty field = unset.
+// Centered popup to edit voice / rate / star weight / layout. Empty text
+// field = unset; layout is a toggle (←/→).
 fn render_settings_popup(frame: &mut ratatui::Frame, app: &App) {
     use ratatui::layout::{Constraint, Direction, Layout};
     use ratatui::widgets::{Clear, Paragraph};
 
-    let area = centered_rect(60, 11, frame.area());
+    let area = centered_rect(60, 13, frame.area());
 
     frame.render_widget(Clear, area);
     let block = Block::default()
@@ -695,10 +819,13 @@ fn render_settings_popup(frame: &mut ratatui::Frame, app: &App) {
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
-    // A label+input pair per field (voice, rate, star weight), spacer, hint.
+    // A label+input pair per field (voice, rate, star weight, layout), then a
+    // spacer and the hint.
     let rows = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
+            Constraint::Length(1),
+            Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
             Constraint::Length(1),
@@ -740,10 +867,29 @@ fn render_settings_popup(frame: &mut ratatui::Frame, app: &App) {
     field("Rate  (words/min, empty = default)", &app.set_rate, 1, 2, 3);
     field("Star weight  (default 3)", &app.set_star_weight, 2, 4, 5);
 
-    let hint = if app.set_field == 2 {
+    // Layout is a toggle rather than a text field: show the current choice,
+    // flanked by arrows when focused.
+    let layout_focused = app.set_field == 3;
+    let layout_label_style = if layout_focused { active } else { dim };
+    frame.render_widget(
+        Paragraph::new("Layout  (←/→ to switch)").style(layout_label_style),
+        rows[6],
+    );
+    let layout_value = match app.set_layout {
+        sentence::Layout::Classic => "classic  (list + side panel)",
+        sentence::Layout::Stacked => "stacked  (single vertical pile)",
+    };
+    let layout_shown = if layout_focused {
+        format!("‹ {layout_value} ›")
+    } else {
+        layout_value.to_string()
+    };
+    frame.render_widget(Paragraph::new(layout_shown), rows[7]);
+
+    let hint = if app.set_field == 3 {
         "Enter save  ·  Esc cancel"
     } else {
         "Enter next  ·  Esc cancel"
     };
-    frame.render_widget(Paragraph::new(hint).style(dim), rows[7]);
+    frame.render_widget(Paragraph::new(hint).style(dim), rows[9]);
 }
