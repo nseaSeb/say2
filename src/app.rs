@@ -113,6 +113,28 @@ impl App {
             .and_then(|i| self.sentences.get(i))
     }
 
+    // macOS `say` defaults to ~175 wpm, so an unset rate is shown/adjusted
+    // from there. Speed is stepped by 10 wpm and clamped to a sane range so
+    // speech stays intelligible.
+    const DEFAULT_RATE: u32 = 175;
+
+    // The effective speaking rate (words/min) for display: the configured one,
+    // or the macOS default when unset.
+    pub fn rate_wpm(&self) -> u32 {
+        self.settings.rate.unwrap_or(Self::DEFAULT_RATE)
+    }
+
+    // Bump the speaking rate by `delta` steps of 10 wpm (negative = slower),
+    // clamp it to a usable range, and persist it like the Settings screen does.
+    pub fn adjust_rate(&mut self, delta: i32) {
+        const STEP: i32 = 10;
+        const MIN: i32 = 80;
+        const MAX: i32 = 400;
+        let next = (self.rate_wpm() as i32 + delta * STEP).clamp(MIN, MAX) as u32;
+        self.settings.rate = Some(next);
+        let _ = crate::sentence::save_all(&self.settings, &self.sentences);
+    }
+
     // Toggle the "starred" flag on the selected sentence and persist it.
     pub fn toggle_star(&mut self) {
         let Some(real) = self.selected_real_index() else {
@@ -353,7 +375,12 @@ impl App {
     // Speak a sentence with macOS `say`. Any sentence still being spoken is
     // stopped first, so voices never overlap (and the old child is reaped).
     // Applies the configured voice (`-v`) and rate (`-r`) when set.
+    //
+    // A trailing `[[slnc N]]` (an embedded `say` command for N ms of silence)
+    // pads the end so macOS' tendency to clip the last sample falls on the
+    // silence instead of the final word.
     fn say_text(&mut self, text: &str) {
+        const TAIL_SILENCE_MS: u32 = 700;
         self.stop();
         let mut cmd = Command::new("say");
         if let Some(voice) = &self.settings.voice {
@@ -362,7 +389,7 @@ impl App {
         if let Some(rate) = self.settings.rate {
             cmd.arg("-r").arg(rate.to_string());
         }
-        cmd.arg(text);
+        cmd.arg(format!("{text} [[slnc {TAIL_SILENCE_MS}]]"));
         self.say_child = cmd.spawn().ok();
     }
 

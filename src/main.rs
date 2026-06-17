@@ -61,18 +61,31 @@ fn main() -> io::Result<()> {
 fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> io::Result<()> {
     use std::time::{Duration, Instant};
 
-    // The stopwatch: when did we last speak an auto-play sentence?
-    let mut last_spoke = Instant::now();
+    // When the gap before the *next* sentence started ticking. Armed only once
+    // the current sentence has finished speaking (None while it's still being
+    // read), so a long sentence is never cut off by the pause timer.
+    let mut pause_start: Option<Instant> = None;
 
     loop {
         let matches = app.matches();
         // Reap a finished `say` process and learn which row is speaking.
         let speaking = app.poll_speaking();
-        // How far through the current auto-play pause we are, in [0, 1].
-        let progress = if app.playing {
-            (last_spoke.elapsed().as_secs_f64() / app.pause_secs.max(1) as f64).clamp(0.0, 1.0)
-        } else {
-            0.0
+        // Track the pause window: reset while speaking, start it the moment the
+        // sentence finishes.
+        if app.playing {
+            if speaking.is_some() {
+                pause_start = None;
+            } else if pause_start.is_none() {
+                pause_start = Some(Instant::now());
+            }
+        }
+        // How far through the current auto-play pause we are, in [0, 1]. Full
+        // while a sentence is still being read (no countdown yet).
+        let progress = match pause_start {
+            Some(t) if app.playing => {
+                (t.elapsed().as_secs_f64() / app.pause_secs.max(1) as f64).clamp(0.0, 1.0)
+            }
+            _ => 0.0,
         };
 
         // 1. DRAW
@@ -105,8 +118,9 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
 
                 let gauge = Gauge::default()
                     .block(Block::default().borders(Borders::ALL).title(format!(
-                        "PLAYING  ·  pause {}s  ·  +/- speed  ·  space stop",
-                        app.pause_secs
+                        "PLAYING  ·  pause {}s (+/-)  ·  speed {}wpm (</>)  ·  space stop",
+                        app.pause_secs,
+                        app.rate_wpm()
                     )))
                     .gauge_style(Style::default().fg(Color::Cyan))
                     .ratio(progress)
@@ -132,8 +146,22 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                 frame.render_widget(Paragraph::new(now_playing), top[1]);
             } else {
                 let (title, line) = match app.mode {
-                    app::Mode::Search => ("Search (Esc exit)", format!("{}_", app.filter)),
-                    _ => ("Filter", app.filter.clone()),
+                    app::Mode::Search => (
+                        format!(
+                            "Search (Esc exit)  ·  pause {}s (+/-)  ·  speed {}wpm (</>)",
+                            app.pause_secs,
+                            app.rate_wpm()
+                        ),
+                        format!("{}_", app.filter),
+                    ),
+                    _ => (
+                        format!(
+                            "Filter  ·  pause {}s (+/-)  ·  speed {}wpm (</>)",
+                            app.pause_secs,
+                            app.rate_wpm()
+                        ),
+                        app.filter.clone(),
+                    ),
                 };
                 let search =
                     Paragraph::new(line).block(Block::default().borders(Borders::ALL).title(title));
@@ -212,8 +240,8 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                         app.stop();
                         return Ok(());
                     }
-                    KeyCode::Down | KeyCode::Char('j') => app.next(),
-                    KeyCode::Up | KeyCode::Char('k') => app.previous(),
+                    KeyCode::Down | KeyCode::Right | KeyCode::Char('j') => app.next(),
+                    KeyCode::Up | KeyCode::Left | KeyCode::Char('k') => app.previous(),
                     KeyCode::Enter | KeyCode::Char('p') => app.speak(),
                     KeyCode::Char('/') => app.mode = app::Mode::Search,
                     KeyCode::Char('a') => app.start_add(),
@@ -228,9 +256,11 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                             app.filter.clear(); // play uses ALL sentences
                             app.mode = app::Mode::Normal;
                             app.reshuffle();
-                            last_spoke = Instant::now() - Duration::from_secs(app.pause_secs);
+                            app.advance(); // start the first sentence right away
+                            pause_start = None; // pause begins only once it ends
                         } else {
                             app.stop(); // pausing: cut the current sentence
+                            pause_start = None;
                         }
                     }
                     KeyCode::Char('+') | KeyCode::Char('=') => {
@@ -241,6 +271,8 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                             app.pause_secs -= 1;
                         }
                     }
+                    KeyCode::Char('>') | KeyCode::Char('.') => app.adjust_rate(1),
+                    KeyCode::Char('<') | KeyCode::Char(',') => app.adjust_rate(-1),
                     _ => {}
                 },
                 app::Mode::Search => match key.code {
@@ -284,10 +316,14 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
             }
         }
 
-        // 3. TICK: if playing and the pause has elapsed, speak the next one.
-        if app.playing && last_spoke.elapsed() >= Duration::from_secs(app.pause_secs) {
+        // 3. TICK: once the current sentence has finished AND the pause has
+        // fully elapsed, speak the next one.
+        if app.playing
+            && speaking.is_none()
+            && pause_start.is_some_and(|t| t.elapsed() >= Duration::from_secs(app.pause_secs))
+        {
             app.advance();
-            last_spoke = Instant::now();
+            pause_start = None; // re-armed when this sentence finishes
         }
     }
 }
@@ -457,7 +493,7 @@ fn footer_line(app: &App, max_width: u16) -> ratatui::text::Line<'static> {
     let (lead, body): (Hints, Hints) = if app.playing {
         (
             &[("?", "help"), ("q", "quit")],
-            &[("space", "stop"), ("+/-", "speed")],
+            &[("space", "stop"), ("+/-", "pause"), ("</>", "speed")],
         )
     } else {
         match app.mode {
@@ -482,6 +518,8 @@ fn footer_line(app: &App, max_width: u16) -> ratatui::text::Line<'static> {
                     ("d", "delete"),
                     ("m", "star"),
                     ("s", "settings"),
+                    ("+/-", "pause"),
+                    ("</>", "speed"),
                 ],
             ),
         }
@@ -607,7 +645,7 @@ fn render_help_popup(frame: &mut ratatui::Frame) {
     frame.render_widget(Clear, area);
 
     let rows = [
-        ("j / k  ↑ / ↓", "move selection"),
+        ("j/k ←→ ↑↓", "move selection"),
         ("p / Enter", "speak selected"),
         ("space", "play / stop auto mode"),
         ("/", "search (text or tag)"),
@@ -616,7 +654,8 @@ fn render_help_popup(frame: &mut ratatui::Frame) {
         ("d", "delete selected"),
         ("m", "star / unstar (plays more often)"),
         ("s", "settings (voice / rate / weight)"),
-        ("+ / -", "pause length (or speed)"),
+        ("+ / -", "pause length between sentences"),
+        ("< / >", "speaking speed (words/min)"),
         ("?", "this help"),
         ("q", "quit"),
     ]
