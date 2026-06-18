@@ -40,6 +40,14 @@ fn main() -> io::Result<()> {
     // cleanly instead of from inside the alternate screen.
     let mut app = App::new(sentence::load());
 
+    // Load practice stats and record this session: count the launch and mark
+    // today as practiced (which maintains the streak). Persist immediately so
+    // the session/streak survives even an abrupt exit.
+    app.stats = sentence::load_stats();
+    app.stats.sessions += 1;
+    app.stats.touch_today();
+    let _ = sentence::save_stats(&app.stats);
+
     // --- SETUP: take over the terminal ---
     install_panic_hook();
     enable_raw_mode()?;
@@ -58,6 +66,16 @@ fn main() -> io::Result<()> {
     result
 }
 
+// Fold whole seconds of accumulated play time into the persisted stats and save
+// them. The sub-second remainder is kept in `play_accum` so nothing is lost
+// across repeated flushes (e.g. stopping and restarting auto-play).
+fn flush_play_time(app: &mut App, play_accum: &mut f64) {
+    let whole = play_accum.trunc();
+    app.stats.add_play_secs(whole as u64);
+    *play_accum -= whole;
+    let _ = sentence::save_stats(&app.stats);
+}
+
 fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> io::Result<()> {
     use std::time::{Duration, Instant};
 
@@ -66,7 +84,20 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
     // read), so a long sentence is never cut off by the pause timer.
     let mut pause_start: Option<Instant> = None;
 
+    // Accumulated wall-clock time (seconds) spent in auto-play this session but
+    // not yet folded into the persisted stats. `last_tick` is the reference for
+    // measuring each loop's elapsed time.
+    let mut play_accum: f64 = 0.0;
+    let mut last_tick = Instant::now();
+
     loop {
+        // Credit time toward practice whenever auto-play is on.
+        let now = Instant::now();
+        if app.playing {
+            play_accum += now.duration_since(last_tick).as_secs_f64();
+        }
+        last_tick = now;
+
         let matches = app.matches();
         // Reap a finished `say` process and learn which row is speaking.
         let speaking = app.poll_speaking();
@@ -102,6 +133,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                 app::Mode::Normal => match key.code {
                     KeyCode::Char('q') => {
                         app.stop();
+                        flush_play_time(app, &mut play_accum);
                         return Ok(());
                     }
                     KeyCode::Down | KeyCode::Right | KeyCode::Char('j') => app.next(),
@@ -113,6 +145,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                     KeyCode::Char('d') => app.start_delete(),
                     KeyCode::Char('m') => app.toggle_star(),
                     KeyCode::Char('s') | KeyCode::Char('S') => app.start_settings(),
+                    KeyCode::Char('t') | KeyCode::Char('T') => app.mode = app::Mode::Stats,
                     KeyCode::Char('?') => app.mode = app::Mode::Help,
                     KeyCode::Char(' ') => {
                         app.playing = !app.playing;
@@ -125,6 +158,8 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                         } else {
                             app.stop(); // pausing: cut the current sentence
                             pause_start = None;
+                            // Persist the time just spent playing.
+                            flush_play_time(app, &mut play_accum);
                         }
                     }
                     KeyCode::Char('+') | KeyCode::Char('=') => {
@@ -170,6 +205,14 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
                 },
                 // Any key dismisses the help overlay.
                 app::Mode::Help => app.mode = app::Mode::Normal,
+                // In the stats overlay, arrows flip the chart metric; any other
+                // key closes it.
+                app::Mode::Stats => match key.code {
+                    KeyCode::Left | KeyCode::Right => {
+                        app.stats_chart_sentences = !app.stats_chart_sentences;
+                    }
+                    _ => app.mode = app::Mode::Normal,
+                },
                 app::Mode::Settings => match key.code {
                     KeyCode::Esc => app.cancel_settings(),
                     KeyCode::Enter => app.settings_enter(),
@@ -427,6 +470,7 @@ fn render_overlays(frame: &mut ratatui::Frame, app: &App) {
         app::Mode::ConfirmDelete => render_confirm_popup(frame, app),
         app::Mode::Help => render_help_popup(frame),
         app::Mode::Settings => render_settings_popup(frame, app),
+        app::Mode::Stats => render_stats_popup(frame, app),
         _ => {}
     }
 }
@@ -609,6 +653,7 @@ fn footer_line(app: &App, max_width: u16) -> ratatui::text::Line<'static> {
             }
             app::Mode::ConfirmDelete => (&[], &[("y", "delete"), ("n / Esc", "cancel")]),
             app::Mode::Help => (&[], &[("any key", "close")]),
+            app::Mode::Stats => (&[], &[("←/→", "metric"), ("any key", "close")]),
             app::Mode::Normal => (
                 &[("?", "help"), ("q", "quit")],
                 &[
@@ -621,6 +666,7 @@ fn footer_line(app: &App, max_width: u16) -> ratatui::text::Line<'static> {
                     ("d", "delete"),
                     ("m", "star"),
                     ("s", "settings"),
+                    ("t", "stats"),
                     ("+/-", "pause"),
                     ("</>", "speed"),
                 ],
@@ -777,6 +823,7 @@ fn render_help_popup(frame: &mut ratatui::Frame) {
         ("d", "delete selected"),
         ("m", "star / unstar (plays more often)"),
         ("s", "settings (voice / rate / weight / layout)"),
+        ("t", "stats (time practiced, streak, counts)"),
         ("+ / -", "pause length between sentences"),
         ("< / >", "speaking speed (words/min)"),
         ("?", "this help"),
@@ -892,4 +939,154 @@ fn render_settings_popup(frame: &mut ratatui::Frame, app: &App) {
         "Enter next  ·  Esc cancel"
     };
     frame.render_widget(Paragraph::new(hint).style(dim), rows[9]);
+}
+
+// Day-of-month for a day number (days since 1970-01-01, UTC), via Howard
+// Hinnant's civil-from-days algorithm. Used to label chart bars; within a
+// 14-day window the day-of-month is unique, so it reads unambiguously.
+fn day_of_month(day: u64) -> u32 {
+    let z = day as i64 + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = z - era * 146_097; // [0, 146096]
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365; // [0, 399]
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100); // [0, 365]
+    let mp = (5 * doy + 2) / 153; // [0, 11]
+    (doy - (153 * mp + 2) / 5 + 1) as u32 // [1, 31]
+}
+
+// Format a duration in whole seconds as a compact "2h 15m" / "45m" / "30s".
+fn format_duration(secs: u64) -> String {
+    let h = secs / 3600;
+    let m = (secs % 3600) / 60;
+    let s = secs % 60;
+    if h > 0 {
+        format!("{h}h {m:02}m")
+    } else if m > 0 {
+        format!("{m}m {s:02}s")
+    } else {
+        format!("{s}s")
+    }
+}
+
+// Centered overlay showing practice statistics: a summary table on top, and a
+// bar chart of the last two weeks of usage below (minutes or sentences per day,
+// toggled with ←/→).
+fn render_stats_popup(frame: &mut ratatui::Frame, app: &App) {
+    use ratatui::layout::{Constraint, Direction, Layout};
+    use ratatui::widgets::{BarChart, Cell, Clear, Paragraph, Row, Table};
+
+    let area = centered_rect(80, 22, frame.area());
+    frame.render_widget(Clear, area);
+
+    // Outer frame; everything else is drawn inside it.
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Cyan))
+        .title(" Stats (any key to close) ");
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+
+    // Summary table (5 rows), a chart caption, then the chart fills the rest.
+    let rows = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(5),
+            Constraint::Length(1),
+            Constraint::Min(0),
+        ])
+        .split(inner);
+
+    let st = &app.stats;
+    let streak = if st.best_streak > st.current_streak {
+        format!("{} days  (best {})", st.current_streak, st.best_streak)
+    } else {
+        format!("{} days", st.current_streak)
+    };
+    let table_rows = [
+        ("⏱ Time practiced", format_duration(st.play_secs)),
+        ("🗣 Sentences spoken", st.sentences_spoken.to_string()),
+        ("📅 Days practiced", st.days_practiced.to_string()),
+        ("🔥 Current streak", streak),
+        ("▶ Sessions", st.sessions.to_string()),
+    ]
+    .into_iter()
+    .map(|(k, v)| {
+        Row::new(vec![
+            Cell::from(k).style(
+                Style::default()
+                    .fg(Color::Cyan)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Cell::from(v),
+        ])
+    });
+    let table = Table::new(table_rows, [Constraint::Length(22), Constraint::Min(0)]);
+    frame.render_widget(table, rows[0]);
+
+    // The last 14 days, oldest → today, with gaps filled as zero.
+    let days = st.recent_days(14);
+    let show_sentences = app.stats_chart_sentences;
+    let caption = format!(
+        "Last 14 days — {} per day   (←/→ to switch)",
+        if show_sentences {
+            "sentences"
+        } else {
+            "minutes"
+        }
+    );
+    frame.render_widget(
+        Paragraph::new(caption).style(Style::default().fg(Color::DarkGray)),
+        rows[1],
+    );
+
+    let labels: Vec<String> = days.iter().map(|d| day_of_month(d.day).to_string()).collect();
+    let data: Vec<(&str, u64)> = labels
+        .iter()
+        .zip(&days)
+        .map(|(label, d)| {
+            let value = if show_sentences {
+                d.sentences
+            } else {
+                d.play_secs / 60
+            };
+            (label.as_str(), value)
+        })
+        .collect();
+
+    let chart = BarChart::default()
+        .data(&data[..])
+        .bar_width(3)
+        .bar_gap(1)
+        .bar_style(Style::default().fg(Color::Cyan))
+        .value_style(
+            Style::default()
+                .fg(Color::Black)
+                .bg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        )
+        .label_style(Style::default().fg(Color::DarkGray));
+    frame.render_widget(chart, rows[2]);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{day_of_month, format_duration};
+
+    #[test]
+    fn format_duration_picks_the_right_unit() {
+        assert_eq!(format_duration(0), "0s");
+        assert_eq!(format_duration(45), "45s");
+        assert_eq!(format_duration(60), "1m 00s");
+        assert_eq!(format_duration(125), "2m 05s");
+        assert_eq!(format_duration(3600), "1h 00m");
+        assert_eq!(format_duration(8100), "2h 15m");
+    }
+
+    #[test]
+    fn day_of_month_matches_known_dates() {
+        assert_eq!(day_of_month(0), 1); // 1970-01-01
+        assert_eq!(day_of_month(30), 31); // 1970-01-31
+        assert_eq!(day_of_month(31), 1); // 1970-02-01
+        assert_eq!(day_of_month(10_957), 1); // 2000-01-01
+    }
 }

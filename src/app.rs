@@ -1,4 +1,4 @@
-use crate::sentence::{Config, Layout, Sentence, Settings};
+use crate::sentence::{Config, Layout, Sentence, Settings, Stats};
 use rand::rng;
 use rand::seq::SliceRandom;
 use std::process::{Child, Command};
@@ -24,6 +24,7 @@ pub enum Mode {
     ConfirmDelete,
     Help,
     Settings,
+    Stats,
 }
 
 pub struct App {
@@ -48,6 +49,8 @@ pub struct App {
     pub set_star_weight: String,   // Settings buffer: star weight (digits)
     pub set_layout: Layout,        // Settings buffer: chosen layout (toggled, not typed)
     pub set_field: usize,          // active Settings field: 0 voice, 1 rate, 2 weight, 3 layout
+    pub stats: Stats,              // persisted practice statistics (time, counts, streak)
+    pub stats_chart_sentences: bool, // Stats view: chart sentences/day (else minutes/day)
 }
 
 impl App {
@@ -96,6 +99,8 @@ impl App {
             set_star_weight: String::new(),
             set_layout: Self::DEFAULT_LAYOUT,
             set_field: 0,
+            stats: Stats::default(),
+            stats_chart_sentences: false,
         }
     }
 
@@ -424,6 +429,10 @@ impl App {
         }
         cmd.arg(format!("{text} [[slnc {TAIL_SILENCE_MS}]]"));
         self.say_child = cmd.spawn().ok();
+        // Count it as practice the moment we actually start speaking it.
+        if self.say_child.is_some() {
+            self.stats.record_sentence();
+        }
     }
 
     // Return the indices of sentences that match the current filter.
